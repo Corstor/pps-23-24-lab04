@@ -19,16 +19,16 @@ object SchoolModel:
     type School
     type Teacher
     type Course
-    def teacher(name: String): Teacher
-    def course(name: String): Course
-    def school(teachers: Sequence[Teacher]): School
+    def course(): Course
+    def teacher(): Teacher
+    def school(): School
     extension (school: School)
       def addTeacher(name: String): School
       def addCourse(name: String): School
       def teacherByName(name: String): Optional[Teacher]
       def courseByName(name: String): Optional[Course]
       def nameOfTeacher(teacher: Teacher): String
-      def nameOfCourse(teacher: Teacher): String
+      def nameOfCourse(course: Course): String
       def setTeacherToCourse(teacher: Teacher, course: Course): School
       def coursesOfATeacher(teacher: Teacher): Sequence[Course]
 
@@ -44,9 +44,9 @@ object SchoolModel:
     type Teacher = TeacherDetail
     type School = SchoolDetail
 
-    def teacher(name: String): Teacher = TeacherDetail(name, Nil())
-    def course(name: String): Course = CourseDetail(name)
-    def school(teachers: Sequence[Teacher]): School = SchoolDetail(teachers, Nil())
+    def course(): Course = CourseDetail("")
+    def teacher(): Teacher = TeacherDetail("", Nil())
+    def school(): School = SchoolDetail(Nil(), Nil())
 
     private def findTeacher(name: String, teachers: Sequence[Teacher]): Optional[Teacher] =
         teachers match
@@ -57,12 +57,16 @@ object SchoolModel:
     extension (school: School) 
       override def courseByName(name: String): Optional[Course] = ???
       override def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
-      override def nameOfCourse(teacher: Teacher): String = ???
-      override def addTeacher(name: String): School = ???
+      override def nameOfCourse(course: Course): String = ???
+      override def addTeacher(name: String): School = school match
+        case SchoolDetail(teachers, courses) => SchoolDetail(Cons(TeacherDetail(name, Nil()), teachers), courses)
+      
       override def addCourse(name: String): School = ???
       override def teacherByName(name: String): Optional[Teacher] = school match
         case SchoolDetail(teachers, _) => findTeacher(name, teachers)
       override def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
-      override def nameOfTeacher(teacher: Teacher): String = ???
+      override def nameOfTeacher(teacher: Teacher): String = teacher match
+        case TeacherDetail(name, _) => name
+      
 
   

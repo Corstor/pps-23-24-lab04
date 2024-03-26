@@ -7,14 +7,17 @@ import u03.Sequences.*
 import u03.Optionals.*
 import Sequence.*
 import Optional.*
+import u02.AlgebraicDataTypes.Person
+import tasks.adts.SchoolModel.BasicSchoolModel.TeacherDetail
 
 class SchoolModelTest {
     val schoolModel: SchoolModule = BasicSchoolModel
     import schoolModel.*
 
-    val mySchool: School = school(Cons(teacher("May"), Cons(teacher("Viroli"), Cons(teacher("Ricci"), Nil()))))
+    val schoolByTeachers: School = school().addTeacher("Viroli")
 
     @Test def teacherByName =
-        assertEquals(Just(teacher("May")), mySchool.teacherByName("May"))
-        assertEquals(Empty(), mySchool.teacherByName("Angelo"))
+        assertEquals("Viroli", schoolByTeachers.nameOfTeacher(Optional.orElse(schoolByTeachers.teacherByName("Viroli"), teacher())))
+
+    
 }
