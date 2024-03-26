@@ -48,22 +48,31 @@ object SchoolModel:
     def teacher(): Teacher = TeacherDetail("", Nil())
     def school(): School = SchoolDetail(Nil(), Nil())
 
-    private def findTeacher(name: String, teachers: Sequence[Teacher]): Optional[Teacher] =
-        teachers match
-        case Cons(h, _) if h.name == name => Just(h)
-        case Cons(h, t) => findTeacher(name, t)
+    private def find[A](name: String, seq: Sequence[A]): Optional[A] =
+        seq match
+        case Cons(h, _) if h match
+          case CourseDetail(n) => n == name
+          case TeacherDetail(n, _) => n == name
+         => Just(h)
+        case Cons(h, t) => find(name, t)
         case _ => Empty()
-
+      
     extension (school: School) 
-      override def courseByName(name: String): Optional[Course] = ???
+      override def courseByName(name: String): Optional[Course] = school match
+        case SchoolDetail(_, courses) => find(name, courses)
+      
       override def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
-      override def nameOfCourse(course: Course): String = ???
+      override def nameOfCourse(course: Course): String = course match
+        case CourseDetail(name) => name
+      
       override def addTeacher(name: String): School = school match
         case SchoolDetail(teachers, courses) => SchoolDetail(Cons(TeacherDetail(name, Nil()), teachers), courses)
       
-      override def addCourse(name: String): School = ???
+      override def addCourse(name: String): School = school match
+        case SchoolDetail(teachers, courses) => SchoolDetail(teachers, Cons(CourseDetail(name), courses))
+      
       override def teacherByName(name: String): Optional[Teacher] = school match
-        case SchoolDetail(teachers, _) => findTeacher(name, teachers)
+        case SchoolDetail(teachers, _) => find(name, teachers)
       override def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
       override def nameOfTeacher(teacher: Teacher): String = teacher match
         case TeacherDetail(name, _) => name

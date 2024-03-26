@@ -15,9 +15,11 @@ class SchoolModelTest {
     import schoolModel.*
 
     val schoolByTeachers: School = school().addTeacher("Viroli")
+    val schoolByCourses: School = school().addCourse("PPS")
 
     @Test def teacherByName =
         assertEquals("Viroli", schoolByTeachers.nameOfTeacher(Optional.orElse(schoolByTeachers.teacherByName("Viroli"), teacher())))
 
-    
+    @Test def courseByName =
+        assertEquals("PPS", schoolByCourses.nameOfCourse(Optional.orElse(schoolByCourses.courseByName("PPS"), course())))
 }
