@@ -56,12 +56,25 @@ object SchoolModel:
          => Just(h)
         case Cons(h, t) => find(name, t)
         case _ => Empty()
+    
+    private def updateTeachers(course: Course, teacher: TeacherDetail, teachers: Sequence[Teacher]): Sequence[TeacherDetail] =
+      teachers match
+        case Nil() => Cons(TeacherDetail(teacher.name, Cons(course, teacher.courses)) , Nil())
+        case _ => Sequence.map(teachers)(t => t match
+          case TeacherDetail(name, courses) if name == teacher.name => TeacherDetail(name, Cons(course, courses))
+          case _ => t
+      )
       
     extension (school: School) 
       override def courseByName(name: String): Optional[Course] = school match
         case SchoolDetail(_, courses) => find(name, courses)
       
-      override def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
+      override def setTeacherToCourse(teacher: Teacher, course: Course): School = school match
+        case SchoolDetail(teachers, courses) => SchoolDetail(updateTeachers(course, teacher, teachers), school.courseByName(course.name) match
+          case Empty() => Cons(course, courses)
+          case _ => courses
+      )
+      
       override def nameOfCourse(course: Course): String = course match
         case CourseDetail(name) => name
       
@@ -70,10 +83,13 @@ object SchoolModel:
       
       override def addCourse(name: String): School = school match
         case SchoolDetail(teachers, courses) => SchoolDetail(teachers, Cons(CourseDetail(name), courses))
-      
+
       override def teacherByName(name: String): Optional[Teacher] = school match
         case SchoolDetail(teachers, _) => find(name, teachers)
-      override def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
+
+      override def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
+        Optional.orElse(school.teacherByName(teacher.name), TeacherDetail("", Nil())).courses
+
       override def nameOfTeacher(teacher: Teacher): String = teacher match
         case TeacherDetail(name, _) => name
       

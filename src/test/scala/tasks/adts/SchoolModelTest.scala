@@ -16,10 +16,20 @@ class SchoolModelTest {
 
     val schoolByTeachers: School = school().addTeacher("Viroli")
     val schoolByCourses: School = school().addCourse("PPS")
+    val schoolByAll: School = school().setTeacherToCourse(getTeacherByName(schoolByTeachers, "Viroli"), getCourseByName(schoolByCourses, "PPS"))
+
+    def getTeacherByName(school: School, name: String): Teacher =
+        Optional.orElse(school.teacherByName(name), teacher())
+
+    def getCourseByName(school: School, name: String): Course =   
+        Optional.orElse(school.courseByName(name), course())
 
     @Test def teacherByName =
-        assertEquals("Viroli", schoolByTeachers.nameOfTeacher(Optional.orElse(schoolByTeachers.teacherByName("Viroli"), teacher())))
+        assertEquals("Viroli", schoolByTeachers.nameOfTeacher(getTeacherByName(schoolByTeachers, "Viroli")))
 
     @Test def courseByName =
-        assertEquals("PPS", schoolByCourses.nameOfCourse(Optional.orElse(schoolByCourses.courseByName("PPS"), course())))
+        assertEquals("PPS", schoolByCourses.nameOfCourse(getCourseByName(schoolByCourses, "PPS")))
+    
+    @Test def coursesOfATeacher =
+        assertEquals(Cons(getCourseByName(schoolByAll, "PPS"), Nil()), schoolByAll.coursesOfATeacher(getTeacherByName(schoolByAll ,"Viroli")))
 }
