@@ -32,7 +32,7 @@ package u04.monads
         case "SetButton" => 
           for 
             value <- mv(nop(), _ => getTextFieldValue("SetTextField"))
-            _ <- mv(seq(set(value.toInt), get()), i => toLabel(i.toString, "Label1"))
+            _ <- mv(seq(set(value), get()), i => toLabel(i.toString, "Label1"))
           yield ()
         case "QuitButton" => mv(nop(), _ => exec(sys.exit()))))
   yield ()
