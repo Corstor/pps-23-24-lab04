@@ -2,6 +2,7 @@ package tasks.monads
 
 import u04.monads.Monads.Monad
 import u04.monads.Monads.Monad
+import u02.CaseMatch.res
 
 /**
   * Exercise 6: 
@@ -25,16 +26,18 @@ object Ex6TryModel:
   def failure[A](exception: Throwable): Try[A] = TryImpl.Failure(exception)
   def exec[A](expression: => A): Try[A] = try success(expression) catch failure(_)
 
-  extension [A](m: Try[A]) 
+  extension [A](m: Try[A])
     def getOrElse[B >: A](other: B): B = m match
       case TryImpl.Success(value) => value
       case TryImpl.Failure(_) => other
 
   given Monad[Try] with
-    override def unit[A](value: A): Try[A] = ???
+    override def unit[A](value: A): Try[A] = success(value)
     extension [A](m: Try[A]) 
 
-      override def flatMap[B](f: A => Try[B]): Try[B] = ??? 
+      override def flatMap[B](f: A => Try[B]): Try[B] = m match
+        case TryImpl.Success(value) => f(value)
+        case TryImpl.Failure(exception) => failure(exception) 
       
 @main def main: Unit = 
   import Ex6TryModel.*
