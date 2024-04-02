@@ -1,7 +1,6 @@
 package tasks.monads
 
 import u04.monads.Monads.Monad
-import u04.monads.Monads.Monad
 import u02.CaseMatch.res
 
 /**
